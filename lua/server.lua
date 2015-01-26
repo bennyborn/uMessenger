@@ -17,7 +17,6 @@ end
 
 sendFile = function(conn, filename)
   if file.open(filename, "r") then
-    --conn:send(responseHeader("200 OK","text/html"));
     conn:send("HTTP/1.1 200 OK\r\nConnection: close\r\nServer: uMessenger\r\nContent-Type: text/html\r\n\r\n");
     repeat
       local line=file.readline()
