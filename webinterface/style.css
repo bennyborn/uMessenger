@@ -40,7 +40,7 @@ body {
 		font-weight: 400;
 	}
 
-	.form input {
+	.form input, .form select {
 		outline: none;
 		display: block;
 		width: 100%;
@@ -63,7 +63,7 @@ body {
 		transition: 0.2s linear;
 	}
 
-		.form input:focus {
+		.form input:focus, .form select:focus {
 			color: #333;
 			border: 1px solid #2ecc71;
 		}
