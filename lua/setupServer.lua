@@ -1,5 +1,3 @@
-tmr.alarm(1, 2000, 0, function() uMessage("uMessenger","Server up and running, awaiting messages...") end )
-
 hex_to_char = function(x)
   return string.char(tonumber(x, 16))
 end
@@ -50,7 +48,7 @@ parseRequest = function(request)
   return {method = method, url = url, path = path, query = query, queryString = queryString, form = form}
 end
 
-srv=net.createServer(net.TCP) srv:listen(80,function(conn)
+srv=net.createServer(net.TCP) srv:listen(1337,function(conn)
 
   conn:on("receive",function(conn,payload)
 
@@ -68,21 +66,16 @@ srv=net.createServer(net.TCP) srv:listen(80,function(conn)
 
       if request.method == "POST" then
 
-        uMessage( request.form.subject,request.form.message );
+        uMessage("uMessenger","Got network credentials, will restart in 5 seconds...");
+        tmr.alarm(0,5000,0,node.restart)
 
-        conn:send("HTTP/1.1 200 OK\r\nConnection: close\r\nServer: uMessenger\r\nContent-Type: application/json\r\n\r\n");
-        conn:send('{ "error" : false }');
+        wifi.setmode( wifi.STATION )
+        wifi.sta.config( request.form.ssid, request.form.password )
 
       else
 
         conn:send("HTTP/1.1 200 OK\r\nConnection: close\r\nServer: uMessenger\r\nContent-Type: text/html\r\n\r\n");
-        sendFile(conn,"header.html");
-
-        conn:send('<input name="subject" placeholder="Your Name" type="text" maxlength="40" required>');
-        conn:send('<input name="message" placeholder="Your Message" type="text" maxlength="127" required>');
-        conn:send('<button class="animated infinite pulse">Post message</button>');
-
-        sendFile(conn,"footer.html");
+        sendFile(conn,"setup.html");
 
       end
 
@@ -90,11 +83,10 @@ srv=net.createServer(net.TCP) srv:listen(80,function(conn)
     else
 
       conn:send("HTTP/1.1 404 Not Found\r\nConnection: close\r\nServer: uMessenger\r\nContent-Type: text/html\r\n\r\n");
-      sendFile(conn,"header.html");
 
+      conn:send('<html><body>');
       conn:send('<p>404 Not found</p>');
-
-      sendFile(conn,"footer.html");
+      conn:send('</body></html>');
 
     end
 
